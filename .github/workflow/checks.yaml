@@ -1,0 +1,40 @@
+---
+name: Checks Test
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+  push:
+    branches: [ "stage" ]
+  pull_request:
+    branches: [ "stage" ]
+
+
+jobs:
+  test-lint:
+    name: Test and Lint
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install DO doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DO_API_TOKEN_KEY }}
+
+    - name: Login to DO Container Registry with short-lived creds
+      run: doctl registry login --expiry-seconds 1200
+
+    - name: Build Container Image
+      working-directory: ./web
+      run: |
+        docker buildx build --platform linux/amd64 -f Dockerfile \
+          -t registry.digitalocean.com/mz-docker/mz-stage-web:latest \
+          -t registry.digitalocean.com/mz-docker/mz-stage-web:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5} \
+          .
+
+    - name: Push image to DO Registry
+      run: |
+        docker push registry.digitalocean.com/mz-docker/mz-stage-web --all-tags

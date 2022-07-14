@@ -8,8 +8,8 @@ services:
       context: ./web
       dockerfile: Dockerfile
     image: djmz-dev:v1
-    # environment:
-    #   - PORT=8000
+    environment:
+      - PORT=8000
     env_file:
       - web/.env.dev
     ports:
