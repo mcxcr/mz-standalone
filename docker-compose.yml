@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  app:
+    # depends_on:
+    #   - db_stage
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    image: djmz-dev:v1
+    # environment:
+    #   - PORT=8000
+    env_file:
+      - web/.env.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./web/app:/app
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+
+    # command: sh -c "chmod +x /app/migrate.sh && sh /app/migrate.sh && /app/entrypoint.sh"
+    # volumes:
+    #   - staticfiles:/app/staticfiles/
+#   db_stage:
+#     platform: linux/arm64/v8
+#     image: postgres:14
+#     restart: always
+#     command: -p 5434
+#     env_file:
+#       - web/.env.dev
+#     expose: 
+#       - 5434
+#     ports:
+#       - "5434:5434"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+      
+
+# volumes:
+#   # staticfiles:
+#   #     external: true
+#   postgres_data:

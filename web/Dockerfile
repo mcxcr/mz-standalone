@@ -1,0 +1,32 @@
+FROM --platform=linux/amd64 python:3.10.2-slim
+LABEL maintainer="mcx.ink"
+
+ENV PYTHONUNBUFFERED 1
+
+COPY ./requirements.txt /tmp/requirements.txt
+
+RUN mkdir /app
+COPY ./app /app
+WORKDIR /app
+EXPOSE 8000
+
+RUN python3 -m venv /opt/venvmz
+
+RUN /opt/venvmz/bin/python3 -m pip install --upgrade pip && \
+    /opt/venvmz/bin/pip install -r /tmp/requirements.txt && \
+    rm -rf /tmp
+
+RUN adduser \
+        --disabled-password \
+        --no-create-home \
+        dockuser
+
+ENV PATH="/opt/venvmz/bin:$PATH"
+
+RUN chown -R dockuser:dockuser /app/
+# RUN chmod -R 755 /app
+
+USER dockuser
+
+# RUN chmod +x entrypoint.sh
+# CMD ["/app/entrypoint.sh"]
