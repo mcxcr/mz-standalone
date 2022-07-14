@@ -1,15 +1,7 @@
 ---
 name: Checks Test
 
-on:
-  workflow_call:
-  workflow_dispatch:
-
-  push:
-    branches: [stage]
-  # pull_request:
-  #   branches: [ "stage" ]
-
+on: [push]
 
 jobs:
   test-lint:
