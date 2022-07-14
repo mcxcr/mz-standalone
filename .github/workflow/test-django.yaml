@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
   push:
-    branches: [ "stage" ]
-  pull_request:
-    branches: [ "stage" ]
+    branches: [stage]
+  # pull_request:
+  #   branches: [ "stage" ]
 
 
 jobs:
