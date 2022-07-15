@@ -10,28 +10,29 @@ on:
 
 jobs:
   test-lint:
-    name: Test and Lint ...
+    name: Test and Lint
     runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: ./web/app
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.10.2]
+
     steps:
-    - name: Checkout Code
+    - name: Actions Checkout
       uses: actions/checkout@v3
 
-    - name: Install DO doctl
-      uses: digitalocean/action-doctl@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
       with:
-        token: ${{ secrets.DO_API_TOKEN_KEY }}
+        python-version: ${{ matrix.python-version }}
 
-    - name: Login to DO Container Registry with short-lived creds
-      run: doctl registry login --expiry-seconds 1200
-
-    - name: Build Container Image
-      working-directory: ./web
+    - name: Test
       run: |
-        docker buildx build --platform linux/amd64 -f Dockerfile \
-          -t registry.digitalocean.com/mz-docker/mz-stage-web:latest \
-          -t registry.digitalocean.com/mz-docker/mz-stage-web:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5} \
-          .
+        docker compose run --rm app sh -c "python manage.py test"
 
-    - name: Push image to DO Registry
+    - name: Lint
       run: |
-        docker push registry.digitalocean.com/mz-docker/mz-stage-web --all-tags
+        docker compose run --rm app sh -c "flake8"
