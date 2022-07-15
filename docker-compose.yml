@@ -10,8 +10,8 @@ services:
     image: djmz-dev:v1
     environment:
       - PORT=8000
-    env_file:
-      - web/app/.env
+    # env_file:
+    #   - web/app/.env
     ports:
       - "8000:8000"
     volumes:
@@ -27,8 +27,8 @@ services:
     image: postgres:14
     restart: always
     command: -p 5434
-    env_file:
-      - web/app/.env
+    # env_file:
+    #   - web/app/.env
     expose: 
       - 5434
     ports:
