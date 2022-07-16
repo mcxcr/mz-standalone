@@ -1,6 +1,8 @@
-name: Django CI Tests - Stage Branch.
+name: Django CI / CD Build - Stage Branch.
 
-on: [pull]
+on:
+  push:
+    branches: [ "main" ]
 
 jobs:
   test-lint:
