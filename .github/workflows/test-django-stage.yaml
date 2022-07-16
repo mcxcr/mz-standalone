@@ -3,10 +3,10 @@ name: Django CI Tests - Stage Branch.
 on:
   workflow_call:
   workflow_dispatch:
-  push:
-    branches: [ "stage" ]
-  pull_request:
-    branches: [ "stage" ]
+  # push:
+  #   branches: [ "stage" ]
+  # pull_request:
+  #   branches: [ "stage" ]
 
 jobs:
   test-lint:

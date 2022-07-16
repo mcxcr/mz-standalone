@@ -1,13 +1,21 @@
-name: Django CI / CD Build - Stage Branch.
+name: Build Docker Container & Push to DO Registry
 
 on:
+  workflow_call:
+  workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [stage]
+  pull_request:
+    branches: [stage]
 
 jobs:
-  test-lint:
-    name: Test and Lint ...
+  test_django_job:
+    uses: mcxcr/mz-standalone/.github/workflows/test-django-stage.yaml@stage
+  build:
+    name: Build Container and Update Registry
     runs-on: ubuntu-20.04
+    needs: [test_django_job]
+
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
