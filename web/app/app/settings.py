@@ -165,12 +165,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Admin colored tags based on Env: Dev=2, Stage=1, Production=0.
-SERVER_ENV_IS = int(os.environ.get('SERVER_ENV_IS'))
+SERVER_ENV_IS = os.environ.get('SERVER_ENV_IS')
 
-if SERVER_ENV_IS == 2:
+if SERVER_ENV_IS == "2":
     ENVIRONMENT_NAME = 'Development'
     ENVIRONMENT_COLOR = 'orange'
-elif SERVER_ENV_IS == 1:
+elif SERVER_ENV_IS == "1":
     ENVIRONMENT_NAME = 'Staging'
     ENVIRONMENT_COLOR = 'green'
 else:
