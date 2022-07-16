@@ -3,7 +3,6 @@ LABEL maintainer="mcx.ink"
 
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 
 RUN mkdir /app
@@ -11,20 +10,10 @@ COPY ./app /app
 WORKDIR /app
 EXPOSE 8000
 
-ARG DEV=true
-
 RUN python3 -m venv /opt/venvmz
-RUN /opt/venvmz/bin/python3 -m pip install --upgrade pip
 
-RUN if [ $DEV = "true" ]; then \
-        echo "Installing DEV Requirements!" && \
-        /opt/venvmz/bin/pip install -r /tmp/requirements.dev.txt ; \
-    else \
-        echo "Installing PRODUCTION Requirements!" && \
-        apt-get update && \
-        apt-get install -y libpq-dev gcc && \
-        /opt/venvmz/bin/pip install -r /tmp/requirements.txt ; \
-    fi && \
+RUN /opt/venvmz/bin/python3 -m pip install --upgrade pip && \
+    /opt/venvmz/bin/pip install -r /tmp/requirements.dev.txt && \
     rm -rf /tmp
 
 RUN adduser \

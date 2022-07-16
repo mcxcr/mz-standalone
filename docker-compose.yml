@@ -16,9 +16,9 @@ services:
       - "8000:8000"
     volumes:
       - ./web/app:/app
-    command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
-
+    # command: >
+    #   sh -c "python manage.py runserver 0.0.0.0:8000"~
+    command: sh -c "chmod +x /app/entrypoint.sh && sh /app/entrypoint.sh"
     # command: sh -c "chmod +x /app/migrate.sh && sh /app/migrate.sh && /app/entrypoint.sh"
     # volumes:
     #   - staticfiles:/app/staticfiles/
@@ -27,6 +27,10 @@ services:
     image: postgres:14
     restart: always
     command: -p 5434
+    # environment:
+    #   - POSTGRES_DB=dockerdc
+    #   - POSTGRES_USER=postgres
+    #   - POSTGRES_PASSWORD=postgres_password
     # env_file:
     #   - web/app/.env
     expose: 
@@ -35,7 +39,7 @@ services:
       - "5434:5434"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      
+
 
 volumes:
   # staticfiles:
