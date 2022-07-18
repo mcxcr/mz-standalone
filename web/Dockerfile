@@ -39,5 +39,5 @@ RUN chown -R dockuser:dockuser /app/
 
 USER dockuser
 
-RUN chmod +x entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 CMD ["/app/entrypoint.sh"]
