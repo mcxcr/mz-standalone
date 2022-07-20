@@ -123,7 +123,7 @@ if DB_IS_AVAIL and POSTGRES_READY:
             "sslmode": "require"
         }
 
-# print(DATABASES)  # PRINT DB DETAILS AS A REF
+print(DATABASES)  # PRINT DB DETAILS AS A REF
 
 
 # Password validation
