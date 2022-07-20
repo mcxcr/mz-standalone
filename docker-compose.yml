@@ -2,8 +2,8 @@ version: "3.9"
 
 services:
   app:
-    depends_on:
-      - db_stage
+    # depends_on:
+    #   - db_stage
     build:
       context: ./web
       dockerfile: Dockerfile
