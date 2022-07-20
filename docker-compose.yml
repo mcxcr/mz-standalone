@@ -35,8 +35,8 @@ services:
     #   - POSTGRES_DB=dockerdc
     #   - POSTGRES_USER=postgres
     #   - POSTGRES_PASSWORD=postgres_password
-    env_file:
-      - web/app/.env
+    # env_file:
+    #   - web/app/.env
     expose: 
       - 5434
     ports:
