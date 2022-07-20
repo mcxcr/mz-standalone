@@ -2,30 +2,30 @@ version: "3.9"
 
 services:
   app:
-    # depends_on:
-    #   - db_stage
+    depends_on:
+      - db_stage
     build:
       context: ./web
       dockerfile: Dockerfile
     image: djmz-dev:v1
     environment:
       - PORT=8000
+      - USE_S3=true
+      - SERVER_ENV_IS=1
     # env_file:
     #   - web/app/.env
     ports:
       - "8000:8000"
     volumes:
       - ./web/app:/app
-    # command: >
-    #   sh -c "python manage.py runserver 0.0.0.0:8000"~
+      - ./staticfiles:/staticfiles
     command: >
       sh -c "python manage.py wait_for_db &&
-             python manage.py migrate &&
-             chmod +x /app/migrate.sh &&
-             sh /app/migrate.sh && /app/entrypoint.sh"
-    # command: sh -c "chmod +x /app/migrate.sh && sh /app/migrate.sh && /app/entrypoint.sh"
-    # volumes:
-    #   - staticfiles:/app/staticfiles/
+             chmod +x /app/migrate.sh && 
+             chmod +x /app/collectstatic.sh &&
+             sh /app/migrate.sh &&
+             /app/collectstatic.sh &&
+             /app/entrypoint.sh"
   db_stage:
     platform: linux/arm64/v8
     image: postgres:14
@@ -35,8 +35,8 @@ services:
     #   - POSTGRES_DB=dockerdc
     #   - POSTGRES_USER=postgres
     #   - POSTGRES_PASSWORD=postgres_password
-    # env_file:
-    #   - web/app/.env
+    env_file:
+      - web/app/.env
     expose: 
       - 5434
     ports:

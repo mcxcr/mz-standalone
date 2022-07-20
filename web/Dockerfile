@@ -34,8 +34,12 @@ RUN adduser \
 
 ENV PATH="/opt/venvmz/bin:$PATH"
 
+RUN mkdir -p /staticfiles/web/media
+RUN mkdir -p /staticfiles/web/static
+RUN chown -R dockuser:dockuser /staticfiles/
+RUN chmod -R 755 /staticfiles/web
+
 RUN chown -R dockuser:dockuser /app/
-# RUN chmod -R 755 /app
 
 USER dockuser
 

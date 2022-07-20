@@ -15,15 +15,17 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
+# ENVIROMENTAL VAR: Dev=2, Stage=1, Production=0.
+SERVER_ENV_IS = os.environ.get("SERVER_ENV_IS")
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = str(os.environ.get('DEBUG')) == "1"
+DEBUG = str(os.environ.get("DEBUG")) == "1"
 
 ENV_ALLOWED_HOST = os.environ.get("ENV_ALLOWED_HOST")
 ALLOWED_HOSTS = []
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
     'core',
 ]
 
@@ -120,7 +123,7 @@ if DB_IS_AVAIL and POSTGRES_READY:
             "sslmode": "require"
         }
 
-print(DATABASES)  # PRINT DB DETAILS AS A REF
+# print(DATABASES)  # PRINT DB DETAILS AS A REF
 
 
 # Password validation
@@ -157,15 +160,53 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+USE_S3 = os.environ.get('USE_S3') == "true"
+
+if USE_S3:
+    # DO Space settings:
+    AWS_ACCESS_KEY_ID = os.environ.get('S3_ACCESS_KEY')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('S3_SECRET_KEY')
+    # ENV_VAR: Dev=2, Stage=1, Production=0.
+    if SERVER_ENV_IS == "0":
+        AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_SPACE_PROD')
+    elif SERVER_ENV_IS == "1":
+        AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_SPACE_STAGE')
+    AWS_S3_ENDPOINT_URL = "https://nyc3.digitaloceanspaces.com"
+    AWS_DEFAULT_ACL = None
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.nyc3.digitaloceanspaces.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+
+    # s3 static settings
+    STATIC_LOCATION = 'static'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+    STATICFILES_STORAGE = 'app.cdn.backends.StaticStorage'
+
+    # s3 public media settings
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'app.cdn.backends.PublicMediaStorage'
+
+    # s3 private media settings
+    PRIVATE_MEDIA_LOCATION = 'private'
+    PRIVATE_FILE_STORAGE = 'app.cdn.backends.PrivateMediaStorage'
+else:
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/3.2/howto/static-files/
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
+    STATIC_ROOT = '/staticfiles/web/static'
+    MEDIA_ROOT = '/staticfiles/web/media'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'core.User'
+
 # Admin colored tags based on Env: Dev=2, Stage=1, Production=0.
-SERVER_ENV_IS = os.environ.get('SERVER_ENV_IS')
+# SERVER_ENV_IS = os.environ.get('SERVER_ENV_IS')
 
 if SERVER_ENV_IS == "2":
     ENVIRONMENT_NAME = 'Development'
